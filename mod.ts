@@ -21,18 +21,6 @@
  * ```
  */
 
-export interface TestEachOptions {
-  /** Whether to ignore this test */
-  ignore?: boolean;
-  /** Whether to run only this test */
-  only?: boolean;
-  /** Test permissions */
-  permissions?: Deno.TestDefinition["permissions"];
-  /** Test sanitizer options */
-  sanitizeOps?: boolean;
-  sanitizeResources?: boolean;
-}
-
 /**
  * Vitest-compatible it.each() API for parameterized testing
  */
@@ -40,28 +28,45 @@ export const it: {
   each<T>(cases: readonly T[]): (
     name: string,
     testFn: (value: T, index: number) => void | Promise<void>,
-    options?: TestEachOptions,
+  ) => void;
+  each<T>(
+    cases: readonly T[],
+    onlyIndex: number,
+  ): (
+    name: string,
+    testFn: (value: T, index: number) => void | Promise<void>,
+  ) => void;
+  each<T>(
+    cases: readonly T[],
+    filter: (value: T, index: number) => boolean,
+  ): (
+    name: string,
+    testFn: (value: T, index: number) => void | Promise<void>,
   ) => void;
 } = {
   /**
    * Run a test function with multiple input cases using Vitest-style API
    */
-  each<T>(cases: readonly T[]) {
+  each<T>(
+    cases: readonly T[],
+    filterOrIndex?: number | ((value: T, index: number) => boolean),
+  ) {
     return (
       name: string,
       testFn: (value: T, index: number) => void | Promise<void>,
-      options?: TestEachOptions,
     ) => {
       cases.forEach((testCase, index) => {
+        const shouldRun = filterOrIndex === undefined ||
+          (typeof filterOrIndex === "number"
+            ? index === filterOrIndex
+            : filterOrIndex(testCase, index));
+
+        if (!shouldRun) return;
+
         const caseName = formatTestName(name, testCase, index);
 
         Deno.test({
           name: caseName,
-          ignore: options?.ignore,
-          only: options?.only,
-          permissions: options?.permissions,
-          sanitizeOps: options?.sanitizeOps,
-          sanitizeResources: options?.sanitizeResources,
           fn: () => testFn(testCase, index),
         });
       });
