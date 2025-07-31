@@ -1,0 +1,36 @@
+{
+  "name": "deno-test-each",
+  "version": "0.1.0",
+  "description": "Parameterized testing utilities for Deno - run the same test with multiple inputs",
+  "main": "mod.ts",
+  "types": "mod.ts",
+  "type": "module",
+  "scripts": {
+    "test": "deno test",
+    "build": "deno run -A build.ts"
+  },
+  "keywords": [
+    "deno",
+    "testing",
+    "parameterized", 
+    "test-each",
+    "unit-testing",
+    "typescript"
+  ],
+  "author": "Andrea",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrepav1/deno-test-each.git"
+  },
+  "bugs": {
+    "url": "https://github.com/andrepav1/deno-test-each/issues"
+  },
+  "homepage": "https://github.com/andrepav1/deno-test-each#readme",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "exports": {
+    ".": "./mod.ts"
+  }
+}
