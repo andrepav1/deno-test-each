@@ -32,7 +32,7 @@ jobs:
           sed -i 's/"version": ".*"/"version": "${{ steps.get_version.outputs.VERSION }}"/' deno.json
 
       - name: Publish to JSR
-        run: deno publish
+        run: deno publish --allow-dirty
 
   publish-npm:
     runs-on: ubuntu-latest
