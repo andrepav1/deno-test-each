@@ -40,9 +40,13 @@ it.each([42])("single item: %d", (n) => {
   assertEquals(n, 42);
 });
 
-// Edge cases - falsy values 
+// Edge cases - falsy values
 it.each([null, undefined, 0, "", false])("falsy values: %s", (value) => {
-  assertEquals(value === null || value === undefined || value === 0 || value === "" || value === false, true);
+  assertEquals(
+    value === null || value === undefined || value === 0 || value === "" ||
+      value === false,
+    true,
+  );
 });
 
 // Edge cases - no placeholders in template
@@ -61,12 +65,15 @@ it.each([{ level1: { level2: { value: "deep" } } }])("nested: %j", (obj) => {
 });
 
 // Edge cases - mixed array types
-it.each([[1, "str", true, null]])("mixed types: %j", ([num, str, bool, nil]) => {
-  assertEquals(num, 1);
-  assertEquals(str, "str");
-  assertEquals(bool, true);
-  assertEquals(nil, null);
-});
+it.each([[1, "str", true, null]])(
+  "mixed types: %j",
+  ([num, str, bool, nil]) => {
+    assertEquals(num, 1);
+    assertEquals(str, "str");
+    assertEquals(bool, true);
+    assertEquals(nil, null);
+  },
+);
 
 // Edge cases - duplicate values
 it.each([1, 1, 1])("duplicates: %d", (n) => {
@@ -79,15 +86,20 @@ it.each(["🚀", "café", "test!@#"])("special chars: %s", (str) => {
 });
 
 // Edge cases - large numbers
-it.each([Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER])("large numbers: %d", (n) => {
-  assertEquals(typeof n, "number");
-});
+it.each([Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER])(
+  "large numbers: %d",
+  (n) => {
+    assertEquals(typeof n, "number");
+  },
+);
 
 // Data type variety - functions
 it.each([
   () => 42,
-  function named() { return "test"; },
-  (x: number) => x * 2
+  function named() {
+    return "test";
+  },
+  (x: number) => x * 2,
 ])("functions: %s", (fn) => {
   assertEquals(typeof fn, "function");
 });
@@ -95,16 +107,16 @@ it.each([
 // Data type variety - dates
 it.each([
   new Date("2023-01-01"),
-  new Date("2024-12-31")
+  new Date("2024-12-31"),
 ])("dates: %s", (date) => {
   assertEquals(date instanceof Date, true);
 });
 
-// Data type variety - regexes  
+// Data type variety - regexes
 it.each([
   /test/,
   /^[a-z]+$/i,
-  new RegExp("\\d+")
+  new RegExp("\\d+"),
 ])("regexes: %s", (regex) => {
   assertEquals(regex instanceof RegExp, true);
 });
@@ -112,7 +124,7 @@ it.each([
 // Data type variety - maps and sets
 it.each([
   new Map([["key", "value"]]),
-  new Set([1, 2, 3])
+  new Set([1, 2, 3]),
 ])("collections: %s", (collection) => {
   assertEquals(collection instanceof Map || collection instanceof Set, true);
 });
@@ -124,7 +136,7 @@ class TestClass {
 
 it.each([
   new TestClass("test1"),
-  new TestClass("test2")
+  new TestClass("test2"),
 ])("class instances: %j", (instance) => {
   assertEquals(instance instanceof TestClass, true);
   assertEquals(typeof instance.value, "string");

@@ -38,7 +38,7 @@ it.each([1, 2, 3], 10)("out of bounds: %d", () => {
   assertEquals(false, true, "Should not run");
 });
 
-// Edge cases - negative index (should run nothing)  
+// Edge cases - negative index (should run nothing)
 it.each([1, 2, 3], -1)("negative index: %d", () => {
   assertEquals(false, true, "Should not run");
 });
@@ -54,7 +54,10 @@ it.each([1, 2, 3], () => true)("all matches: %d", (n) => {
 });
 
 // Edge cases - complex predicate with edge conditions
-it.each([0, 1, 2, 3], (v, i) => v === 0 || i === 3)("complex edge: %d", (n, index) => {
-  const isValid = (n === 0 && index === 0) || (index === 3);
-  assertEquals(isValid, true);
-});
+it.each([0, 1, 2, 3], (v, i) => v === 0 || i === 3)(
+  "complex edge: %d",
+  (n, index) => {
+    const isValid = (n === 0 && index === 0) || (index === 3);
+    assertEquals(isValid, true);
+  },
+);
