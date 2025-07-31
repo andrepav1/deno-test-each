@@ -181,31 +181,25 @@ deno lint
 
 ## Releasing
 
-This project uses automated releases via GitHub Actions:
+This project uses manual releases for better control:
 
 ```bash
-# Release a new version (this will trigger CI/CD)
+# 1. Update versions
 ./release.sh 1.0.0
 
-# Or manually:
-# 1. Update version in deno.json and package.json
-# 2. git tag v1.0.0
-# 3. git push origin v1.0.0
+# 2. Publish to JSR
+deno publish
+
+# 3. Build and publish to NPM
+deno task build
+cd npm && npm publish
 ```
 
-The workflow automatically:
+## Manual Release Process
 
-- ✅ Runs tests and quality checks
-- 📦 Publishes to JSR (JavaScript Registry)
-- 📦 Builds and publishes to NPM
-- 🏷️ Creates GitHub release with changelog
-
-## Prerequisites for Publishing
-
-1. **JSR**: Authentication happens automatically via GitHub OIDC
-2. **NPM**: Add `NPM_TOKEN` to repository secrets:
-   - Go to [npmjs.com](https://npmjs.com) → Access Tokens → Generate
-   - Add to GitHub: Settings → Secrets → Actions → `NPM_TOKEN`
+1. **Update versions**: Run `./release.sh <version>` to update configs and create git tag
+2. **Publish to JSR**: Run `deno publish` (requires JSR authentication)
+3. **Publish to NPM**: Run `deno task build && cd npm && npm publish` (requires npm login)
 
 ## License
 
