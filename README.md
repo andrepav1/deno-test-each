@@ -166,7 +166,38 @@ deno task build
 
 # Test examples
 deno test test_examples/
+
+# Check code quality
+deno fmt --check
+deno lint
 ```
+
+## Releasing
+
+This project uses automated releases via GitHub Actions:
+
+```bash
+# Release a new version (this will trigger CI/CD)
+./release.sh 1.0.0
+
+# Or manually:
+# 1. Update version in deno.json and package.json
+# 2. git tag v1.0.0
+# 3. git push origin v1.0.0
+```
+
+The workflow automatically:
+- ✅ Runs tests and quality checks
+- 📦 Publishes to JSR (JavaScript Registry)
+- 📦 Builds and publishes to NPM
+- 🏷️ Creates GitHub release with changelog
+
+## Prerequisites for Publishing
+
+1. **JSR**: Authentication happens automatically via GitHub OIDC
+2. **NPM**: Add `NPM_TOKEN` to repository secrets:
+   - Go to [npmjs.com](https://npmjs.com) → Access Tokens → Generate
+   - Add to GitHub: Settings → Secrets → Actions → `NPM_TOKEN`
 
 ## License
 
