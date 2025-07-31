@@ -23,7 +23,8 @@ await build({
   package: {
     name: "deno-test-each",
     version: Deno.args[0] || "0.1.0",
-    description: "Parameterized testing utilities for Deno - run the same test with multiple inputs",
+    description:
+      "Parameterized testing utilities for Deno - run the same test with multiple inputs",
     license: "MIT",
     author: "Andrea",
     repository: {
@@ -40,14 +41,14 @@ await build({
       "parameterized",
       "test-each",
       "unit-testing",
-      "typescript"
+      "typescript",
     ],
     engines: {
-      node: ">=16.0.0"
+      node: ">=16.0.0",
     },
     devDependencies: {
-      "@types/node": "^20.0.0"
-    }
+      "@types/node": "^20.0.0",
+    },
   },
   postBuild() {
     // copy additional files

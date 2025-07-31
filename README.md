@@ -1,6 +1,7 @@
 # deno-test-each
 
-Parameterized testing utilities for Deno. Run the same test with multiple inputs easily.
+Parameterized testing utilities for Deno. Run the same test with multiple inputs
+easily.
 
 ## Features
 
@@ -13,17 +14,19 @@ Parameterized testing utilities for Deno. Run the same test with multiple inputs
 ## Installation
 
 ### Deno
+
 ```typescript
-import { testEach, test } from "https://deno.land/x/deno_test_each/mod.ts";
+import { test, testEach } from "https://deno.land/x/deno_test_each/mod.ts";
 ```
 
 ### Node.js/npm
+
 ```bash
 npm install deno-test-each
 ```
 
 ```typescript
-import { testEach, test } from "deno-test-each";
+import { test, testEach } from "deno-test-each";
 ```
 
 ## Usage
@@ -43,7 +46,7 @@ testEach([1, 2, 3, 4], (n) => {
 testEach([
   [1, 2, 3],
   [2, 3, 5],
-  [3, 4, 7]
+  [3, 4, 7],
 ], ([a, b, expected]) => {
   assertEquals(a + b, expected);
 }, "addition: %d + %d = %d");
@@ -52,7 +55,7 @@ testEach([
 testEach([
   { input: "hello", expected: 5 },
   { input: "world", expected: 5 },
-  { input: "", expected: 0 }
+  { input: "", expected: 0 },
 ], ({ input, expected }) => {
   assertEquals(input.length, expected);
 }, "string length test");
@@ -71,7 +74,7 @@ test.each([1, 2, 3, 4])("number %d should be positive", (n) => {
 test.each([
   [1, 2, 3],
   [5, 5, 10],
-  [10, 15, 25]
+  [10, 15, 25],
 ])("adds %d + %d = %d", ([a, b, expected]) => {
   assertEquals(a + b, expected);
 });
@@ -82,13 +85,13 @@ test.each([
 Use Jest-like placeholders in your test names:
 
 - `%s` - String representation
-- `%d` - Number representation  
+- `%d` - Number representation
 - `%j` - JSON representation
 
 ```typescript
 testEach([
   ["hello", "world"],
-  ["foo", "bar"]
+  ["foo", "bar"],
 ], ([a, b]) => {
   assertEquals(a.length + b.length > 0, true);
 }, "concatenating %s and %s");
@@ -105,7 +108,7 @@ testEach([1, 2, 3], (n) => {
   only: false,
   permissions: { read: true },
   sanitizeOps: true,
-  sanitizeResources: true
+  sanitizeResources: true,
 });
 ```
 
@@ -116,6 +119,7 @@ testEach([1, 2, 3], (n) => {
 Run a test function with multiple input cases.
 
 **Parameters:**
+
 - `cases: readonly T[]` - Array of test cases
 - `testFn: (value: T, index: number) => void | Promise<void>` - Test function
 - `options?: string | TestEachOptions` - Test name or options object
@@ -125,6 +129,7 @@ Run a test function with multiple input cases.
 Fluent API for parameterized testing.
 
 **Parameters:**
+
 - `cases: readonly T[]` - Array of test cases
 - `name: string` - Test name template
 - `testFn: (value: T, index: number) => void | Promise<void>` - Test function
@@ -134,9 +139,9 @@ Fluent API for parameterized testing.
 
 ```typescript
 interface TestEachOptions {
-  name?: string;           // Custom name template
-  ignore?: boolean;        // Skip this test
-  only?: boolean;          // Run only this test
+  name?: string; // Custom name template
+  ignore?: boolean; // Skip this test
+  only?: boolean; // Run only this test
   permissions?: Deno.TestDefinition["permissions"];
   sanitizeOps?: boolean;
   sanitizeResources?: boolean;
@@ -145,9 +150,11 @@ interface TestEachOptions {
 
 ## Why deno-test-each?
 
-Deno doesn't have built-in parameterized testing. This library fills that gap by:
+Deno doesn't have built-in parameterized testing. This library fills that gap
+by:
 
-1. **Generating individual test cases** - Each input creates a separate `Deno.test()` call
+1. **Generating individual test cases** - Each input creates a separate
+   `Deno.test()` call
 2. **Providing clear test names** - See exactly which case failed
 3. **Supporting async tests** - Works with promises and async functions
 4. **Maintaining type safety** - Full TypeScript support
@@ -187,6 +194,7 @@ This project uses automated releases via GitHub Actions:
 ```
 
 The workflow automatically:
+
 - ✅ Runs tests and quality checks
 - 📦 Publishes to JSR (JavaScript Registry)
 - 📦 Builds and publishes to NPM

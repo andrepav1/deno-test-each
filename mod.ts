@@ -1,16 +1,16 @@
 /**
  * Parameterized testing utilities for Deno
- * 
+ *
  * @example
  * ```typescript
  * import { testEach, test } from "./mod.ts";
  * import { assertEquals } from "jsr:@std/assert";
- * 
+ *
  * // Function-based API
  * testEach([1, 2, 3, 4], (n) => {
  *   assertEquals(n > 0, true);
  * }, "should be positive");
- * 
+ *
  * // Object-based API
  * test.each([
  *   [1, 2, 3],
@@ -42,17 +42,17 @@ export interface TestEachOptions {
 export function testEach<T>(
   cases: readonly T[],
   testFn: (value: T, index: number) => void | Promise<void>,
-  nameOrOptions?: string | TestEachOptions
+  nameOrOptions?: string | TestEachOptions,
 ): void {
-  const options = typeof nameOrOptions === "string" 
-    ? { name: nameOrOptions } 
+  const options = typeof nameOrOptions === "string"
+    ? { name: nameOrOptions }
     : nameOrOptions || {};
-  
+
   const baseName = options.name || "test case";
-  
+
   cases.forEach((testCase, index) => {
     const caseName = formatTestName(baseName, testCase, index);
-    
+
     Deno.test({
       name: caseName,
       ignore: options.ignore,
@@ -60,7 +60,7 @@ export function testEach<T>(
       permissions: options.permissions,
       sanitizeOps: options.sanitizeOps,
       sanitizeResources: options.sanitizeResources,
-      fn: () => testFn(testCase, index)
+      fn: () => testFn(testCase, index),
     });
   });
 }
@@ -72,7 +72,7 @@ export const test: {
   each<T>(cases: readonly T[]): (
     nameOrTestFn: string | ((value: T, index: number) => void | Promise<void>),
     testFn?: (value: T, index: number) => void | Promise<void>,
-    options?: Omit<TestEachOptions, "name">
+    options?: Omit<TestEachOptions, "name">,
   ) => void;
 } = {
   /**
@@ -80,9 +80,11 @@ export const test: {
    */
   each<T>(cases: readonly T[]) {
     return (
-      nameOrTestFn: string | ((value: T, index: number) => void | Promise<void>),
+      nameOrTestFn:
+        | string
+        | ((value: T, index: number) => void | Promise<void>),
       testFn?: (value: T, index: number) => void | Promise<void>,
-      options?: Omit<TestEachOptions, "name">
+      options?: Omit<TestEachOptions, "name">,
     ) => {
       if (typeof nameOrTestFn === "function") {
         // test.each(cases)(testFn, options)
@@ -95,24 +97,31 @@ export const test: {
         testEach(cases, testFn, { ...options, name: nameOrTestFn });
       }
     };
-  }
+  },
 };
 
 /**
  * Format test name with case interpolation
  */
-function formatTestName<T>(template: string, testCase: T, index: number): string {
-  if (template.includes("%s") || template.includes("%d") || template.includes("%j")) {
+function formatTestName<T>(
+  template: string,
+  testCase: T,
+  index: number,
+): string {
+  if (
+    template.includes("%s") || template.includes("%d") ||
+    template.includes("%j")
+  ) {
     return interpolateTemplate(template, testCase);
   }
-  
+
   // If no placeholders, append case info
-  const caseStr = Array.isArray(testCase) 
+  const caseStr = Array.isArray(testCase)
     ? `[${testCase.join(", ")}]`
     : typeof testCase === "object" && testCase !== null
     ? JSON.stringify(testCase)
     : String(testCase);
-    
+
   return `${template} (case ${index}: ${caseStr})`;
 }
 
@@ -123,31 +132,39 @@ function interpolateTemplate<T>(template: string, testCase: T): string {
   if (Array.isArray(testCase)) {
     let result = template;
     let caseIndex = 0;
-    
+
     // Replace %s, %d, %j placeholders
     result = result.replace(/%[sdj]/g, (match) => {
       if (caseIndex >= testCase.length) return match;
-      
+
       const value = testCase[caseIndex++];
       switch (match) {
-        case "%s": return String(value);
-        case "%d": return String(Number(value));
-        case "%j": return JSON.stringify(value);
-        default: return match;
+        case "%s":
+          return String(value);
+        case "%d":
+          return String(Number(value));
+        case "%j":
+          return JSON.stringify(value);
+        default:
+          return match;
       }
     });
-    
+
     return result;
   }
-  
+
   // For non-array cases, replace first placeholder
   const value = testCase;
   return template.replace(/%[sdj]/, (match) => {
     switch (match) {
-      case "%s": return String(value);
-      case "%d": return String(Number(value));
-      case "%j": return JSON.stringify(value);
-      default: return match;
+      case "%s":
+        return String(value);
+      case "%d":
+        return String(Number(value));
+      case "%j":
+        return JSON.stringify(value);
+      default:
+        return match;
     }
   });
 }

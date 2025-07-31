@@ -12,7 +12,7 @@
   "keywords": [
     "deno",
     "testing",
-    "parameterized", 
+    "parameterized",
     "test-each",
     "unit-testing",
     "typescript"

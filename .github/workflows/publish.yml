@@ -3,7 +3,7 @@ name: Publish to JSR and NPM
 on:
   push:
     tags:
-      - 'v*.*.*'  # Triggers on version tags like v1.0.0, v1.2.3, etc.
+      - "v*.*.*" # Triggers on version tags like v1.0.0, v1.2.3, etc.
 
 jobs:
   publish-jsr:
@@ -14,23 +14,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      
+
       - name: Run tests
         run: deno test
-      
+
       - name: Extract version from tag
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-      
+
       - name: Update version in deno.json
         run: |
           sed -i 's/"version": ".*"/"version": "${{ steps.get_version.outputs.VERSION }}"/' deno.json
-      
+
       - name: Publish to JSR
         run: deno publish
 
@@ -40,32 +40,32 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
-      
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      
+
       - name: Extract version from tag
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-      
+
       - name: Update version in package.json
         run: |
           sed -i 's/"version": ".*"/"version": "${{ steps.get_version.outputs.VERSION }}"/' package.json
-      
+
       - name: Run tests
         run: deno test
-      
+
       - name: Build for NPM
         run: deno run -A build.ts ${{ steps.get_version.outputs.VERSION }}
-      
+
       - name: Publish to NPM
         working-directory: ./npm
         run: npm publish
@@ -80,11 +80,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Extract version from tag
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-      
+
       - name: Create GitHub Release
         uses: actions/create-release@v1
         env:
@@ -94,10 +94,10 @@ jobs:
           release_name: Release v${{ steps.get_version.outputs.VERSION }}
           body: |
             ## Changes in v${{ steps.get_version.outputs.VERSION }}
-            
+
             - Released to JSR: https://jsr.io/@andrea/deno-test-each
             - Released to NPM: https://npmjs.com/package/deno-test-each
-            
+
             See the full changelog at: https://github.com/andrepav1/deno-test-each/compare/v${{ steps.get_version.outputs.VERSION }}
           draft: false
           prerelease: false
