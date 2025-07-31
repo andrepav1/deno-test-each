@@ -10,6 +10,7 @@ multiple inputs using the familiar `it.each()` syntax.
 - 🎯 **Vitest-compatible** - Familiar `it.each()` API
 - 🔧 **Template interpolation** - `%s`, `%d`, `%j` placeholders
 - 📊 **Clear test output** - Descriptive test names for each case
+- 🎛️ **Case filtering** - Run specific cases by index or predicate
 
 ## Installation
 
