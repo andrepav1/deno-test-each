@@ -1,6 +1,6 @@
 {
   "name": "deno-test-each",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Parameterized testing utilities for Deno - run the same test with multiple inputs",
   "main": "mod.ts",
   "types": "mod.ts",
