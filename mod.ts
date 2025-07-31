@@ -1,30 +1,27 @@
 /**
- * Parameterized testing utilities for Deno
+ * Parameterized testing utilities for Deno - Vitest-compatible API
  *
  * @example
  * ```typescript
- * import { testEach, test } from "./mod.ts";
+ * import { it } from "./mod.ts";
  * import { assertEquals } from "jsr:@std/assert";
  *
- * // Function-based API
- * testEach([1, 2, 3, 4], (n) => {
+ * // Vitest-style API
+ * it.each([1, 2, 3, 4])("should be positive: %d", (n) => {
  *   assertEquals(n > 0, true);
- * }, "should be positive");
+ * });
  *
- * // Object-based API
- * test.each([
+ * it.each([
  *   [1, 2, 3],
  *   [2, 3, 5],
  *   [3, 4, 7]
- * ])("adds %d + %d = %d", (a, b, expected) => {
+ * ])("adds %d + %d = %d", ([a, b, expected]) => {
  *   assertEquals(a + b, expected);
  * });
  * ```
  */
 
 export interface TestEachOptions {
-  /** Custom name template. Use %s for string interpolation of case values */
-  name?: string;
   /** Whether to ignore this test */
   ignore?: boolean;
   /** Whether to run only this test */
@@ -37,68 +34,50 @@ export interface TestEachOptions {
 }
 
 /**
- * Run a test function with multiple input cases
+ * Vitest-compatible it.each() API for parameterized testing
  */
-export function testEach<T>(
-  cases: readonly T[],
-  testFn: (value: T, index: number) => void | Promise<void>,
-  nameOrOptions?: string | TestEachOptions,
-): void {
-  const options = typeof nameOrOptions === "string"
-    ? { name: nameOrOptions }
-    : nameOrOptions || {};
-
-  const baseName = options.name || "test case";
-
-  cases.forEach((testCase, index) => {
-    const caseName = formatTestName(baseName, testCase, index);
-
-    Deno.test({
-      name: caseName,
-      ignore: options.ignore,
-      only: options.only,
-      permissions: options.permissions,
-      sanitizeOps: options.sanitizeOps,
-      sanitizeResources: options.sanitizeResources,
-      fn: () => testFn(testCase, index),
-    });
-  });
-}
-
-/**
- * Object-based API similar to Jest's test.each
- */
-export const test: {
+export const it: {
   each<T>(cases: readonly T[]): (
-    nameOrTestFn: string | ((value: T, index: number) => void | Promise<void>),
-    testFn?: (value: T, index: number) => void | Promise<void>,
-    options?: Omit<TestEachOptions, "name">,
+    name: string,
+    testFn: (value: T, index: number) => void | Promise<void>,
+    options?: TestEachOptions,
   ) => void;
 } = {
   /**
-   * Run a test function with multiple input cases using fluent API
+   * Run a test function with multiple input cases using Vitest-style API
    */
   each<T>(cases: readonly T[]) {
     return (
-      nameOrTestFn:
-        | string
-        | ((value: T, index: number) => void | Promise<void>),
-      testFn?: (value: T, index: number) => void | Promise<void>,
-      options?: Omit<TestEachOptions, "name">,
+      name: string,
+      testFn: (value: T, index: number) => void | Promise<void>,
+      options?: TestEachOptions,
     ) => {
-      if (typeof nameOrTestFn === "function") {
-        // test.each(cases)(testFn, options)
-        testEach(cases, nameOrTestFn, options);
-      } else {
-        // test.each(cases)(name, testFn, options)
-        if (!testFn) {
-          throw new Error("Test function is required when name is provided");
-        }
-        testEach(cases, testFn, { ...options, name: nameOrTestFn });
-      }
+      cases.forEach((testCase, index) => {
+        const caseName = formatTestName(name, testCase, index);
+
+        Deno.test({
+          name: caseName,
+          ignore: options?.ignore,
+          only: options?.only,
+          permissions: options?.permissions,
+          sanitizeOps: options?.sanitizeOps,
+          sanitizeResources: options?.sanitizeResources,
+          fn: () => testFn(testCase, index),
+        });
+      });
     };
   },
 };
+
+// Legacy aliases for backward compatibility
+export const test = it;
+export function testEach<T>(
+  cases: readonly T[],
+  testFn: (value: T, index: number) => void | Promise<void>,
+  name?: string,
+): void {
+  it.each(cases)(name || "test case", testFn);
+}
 
 /**
  * Format test name with case interpolation
