@@ -69,15 +69,6 @@ export const it: {
   },
 };
 
-// Legacy aliases for backward compatibility
-export const test = it;
-export function testEach<T>(
-  cases: readonly T[],
-  testFn: (value: T, index: number) => void | Promise<void>,
-  name?: string,
-): void {
-  it.each(cases)(name || "test case", testFn);
-}
 
 /**
  * Format test name with case interpolation
