@@ -18,7 +18,10 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.x
+          deno-version: 2.4.3
+
+      - name: Cache dependencies
+        run: deno cache mod.ts test_examples/basic_test.ts
 
       - name: Run tests
         run: deno test
@@ -50,7 +53,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.x
+          deno-version: 2.4.3
 
       - name: Extract version from tag
         id: get_version

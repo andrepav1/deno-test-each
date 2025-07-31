@@ -2,4 +2,3 @@ npm/
 node_modules/
 *.log
 .DS_Store
-coverage/deno.lock
