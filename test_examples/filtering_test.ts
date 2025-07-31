@@ -32,3 +32,29 @@ it.each([1, 2, 2, 3], 1)("duplicates - only index 1: %d", (n, index) => {
   assertEquals(n, 2);
   assertEquals(index, 1);
 });
+
+// Edge cases - out of bounds index (should run nothing)
+it.each([1, 2, 3], 10)("out of bounds: %d", () => {
+  assertEquals(false, true, "Should not run");
+});
+
+// Edge cases - negative index (should run nothing)  
+it.each([1, 2, 3], -1)("negative index: %d", () => {
+  assertEquals(false, true, "Should not run");
+});
+
+// Edge cases - predicate matches nothing
+it.each([1, 2, 3], (v) => v > 100)("no matches: %d", () => {
+  assertEquals(false, true, "Should not run");
+});
+
+// Edge cases - predicate matches everything
+it.each([1, 2, 3], () => true)("all matches: %d", (n) => {
+  assertEquals(n > 0, true);
+});
+
+// Edge cases - complex predicate with edge conditions
+it.each([0, 1, 2, 3], (v, i) => v === 0 || i === 3)("complex edge: %d", (n, index) => {
+  const isValid = (n === 0 && index === 0) || (index === 3);
+  assertEquals(isValid, true);
+});
