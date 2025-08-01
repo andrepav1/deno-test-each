@@ -102,9 +102,9 @@ function formatTestName<T>(
 /**
  * Get nested property value from object using dot notation
  */
-function getNestedProperty(obj: any, path: string): any {
-  return path.split('.').reduce((current, prop) => {
-    return current?.[prop];
+function getNestedProperty(obj: Record<string, unknown>, path: string): unknown {
+  return path.split(".").reduce((current: Record<string, unknown> | undefined, prop) => {
+    return current?.[prop] as Record<string, unknown> | undefined;
   }, obj);
 }
 
@@ -115,15 +115,21 @@ function interpolateTemplate<T>(template: string, testCase: T): string {
   let result = template;
 
   // Handle $propertyName syntax for object property access
-  if (typeof testCase === "object" && testCase !== null && !Array.isArray(testCase)) {
-    result = result.replace(/\$([a-zA-Z_][\w-]*(?:\.[a-zA-Z_][\w-]*)*)/g, (match, propertyPath) => {
-      try {
-        const value = getNestedProperty(testCase, propertyPath);
-        return value !== undefined ? String(value) : match;
-      } catch {
-        return match;
-      }
-    });
+  if (
+    typeof testCase === "object" && testCase !== null &&
+    !Array.isArray(testCase)
+  ) {
+    result = result.replace(
+      /\$([a-zA-Z_][\w-]*(?:\.[a-zA-Z_][\w-]*)*)/g,
+      (match, propertyPath) => {
+        try {
+          const value = getNestedProperty(testCase as Record<string, unknown>, propertyPath);
+          return value !== undefined ? String(value) : match;
+        } catch {
+          return match;
+        }
+      },
+    );
   }
 
   if (Array.isArray(testCase)) {

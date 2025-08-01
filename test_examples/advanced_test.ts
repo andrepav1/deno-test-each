@@ -7,7 +7,7 @@ it.each([1, 2, 3])("basic test: %d", (n) => {
 });
 
 // Test async functionality
-it.each([100, 200, 300])("async test: %d ms", async (ms) => {
+it.each([100, 200, 300])("async test: %d ms", async (_ms) => {
   const start = Date.now();
   await new Promise((resolve) => setTimeout(resolve, 1));
   const elapsed = Date.now() - start;
