@@ -84,7 +84,7 @@ function formatTestName<T>(
 ): string {
   if (
     template.includes("%s") || template.includes("%d") ||
-    template.includes("%j")
+    template.includes("%j") || template.includes("$")
   ) {
     return interpolateTemplate(template, testCase);
   }
@@ -100,11 +100,33 @@ function formatTestName<T>(
 }
 
 /**
+ * Get nested property value from object using dot notation
+ */
+function getNestedProperty(obj: any, path: string): any {
+  return path.split('.').reduce((current, prop) => {
+    return current?.[prop];
+  }, obj);
+}
+
+/**
  * Interpolate template string with test case values
  */
 function interpolateTemplate<T>(template: string, testCase: T): string {
+  let result = template;
+
+  // Handle $propertyName syntax for object property access
+  if (typeof testCase === "object" && testCase !== null && !Array.isArray(testCase)) {
+    result = result.replace(/\$([a-zA-Z_][\w-]*(?:\.[a-zA-Z_][\w-]*)*)/g, (match, propertyPath) => {
+      try {
+        const value = getNestedProperty(testCase, propertyPath);
+        return value !== undefined ? String(value) : match;
+      } catch {
+        return match;
+      }
+    });
+  }
+
   if (Array.isArray(testCase)) {
-    let result = template;
     let caseIndex = 0;
 
     // Replace %s, %d, %j placeholders
@@ -129,7 +151,7 @@ function interpolateTemplate<T>(template: string, testCase: T): string {
 
   // For non-array cases, replace first placeholder
   const value = testCase;
-  return template.replace(/%[sdj]/, (match) => {
+  result = result.replace(/%[sdj]/, (match) => {
     switch (match) {
       case "%s":
         return String(value);
@@ -141,4 +163,6 @@ function interpolateTemplate<T>(template: string, testCase: T): string {
         return match;
     }
   });
+
+  return result;
 }

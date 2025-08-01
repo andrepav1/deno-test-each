@@ -8,9 +8,10 @@ multiple inputs using the familiar `it.each()` syntax.
 - 🚀 **Zero dependencies** - Built for Deno's standard library
 - 📝 **TypeScript support** - Full type safety and IntelliSense
 - 🎯 **Vitest-compatible** - Familiar `it.each()` API
-- 🔧 **Template interpolation** - `%s`, `%d`, `%j` placeholders
+- 🔧 **Template interpolation** - `%s`, `%d`, `%j` placeholders + `$property` syntax
 - 📊 **Clear test output** - Descriptive test names for each case
 - 🎛️ **Case filtering** - Run specific cases by index or predicate
+- ✨ **Property interpolation** - Access object properties in test names
 
 ## Installation
 
@@ -71,8 +72,50 @@ it.each([
 Use placeholders in test names:
 
 - `%s` - String representation
-- `%d` - Number representation
+- `%d` - Number representation  
 - `%j` - JSON representation
+- `$property` - Object property access (new in v0.4.0)
+
+#### Property Interpolation
+
+Access object properties directly in test names using `$property` syntax:
+
+```typescript
+// Basic property access
+it.each([
+  { name: "positive case", value: 5 },
+  { name: "negative case", value: -3 },
+  { name: "zero case", value: 0 }
+])("Testing $name with value $value", ({ name, value }) => {
+  // Generates:
+  // "Testing positive case with value 5"
+  // "Testing negative case with value -3"  
+  // "Testing zero case with value 0"
+  assertEquals(typeof value, "number");
+});
+
+// Nested property access
+it.each([
+  { user: { profile: { name: "Alice" } }, id: 1 },
+  { user: { profile: { name: "Bob" } }, id: 2 }
+])("User $user.profile.name has id $id", ({ user, id }) => {
+  // Generates:
+  // "User Alice has id 1"
+  // "User Bob has id 2"
+  assertEquals(user.profile.name.length > 0, true);
+});
+
+// Mixed syntax (combine $property with %j)
+it.each([
+  { name: "test1", data: { count: 10 } },
+  { name: "test2", data: { count: 20 } }
+])("Case $name with data %j", ({ name, data }) => {
+  // Generates:
+  // "Case test1 with data {"name":"test1","data":{"count":10}}"
+  // "Case test2 with data {"name":"test2","data":{"count":20}}"
+  assertEquals(data.count > 0, true);
+});
+```
 
 ### Filtering Cases
 
